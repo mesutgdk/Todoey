@@ -17,7 +17,7 @@ class CategoryViewControllerTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        loadData()
+        loadCategories()
     }
 
     // MARK: - Table view data source
@@ -34,28 +34,32 @@ class CategoryViewControllerTableViewController: UITableViewController {
     
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         var textField = UITextField()
-        let alert = UIAlertController (title: "Add New Todoey Category", message: "", preferredStyle: .alert)
-        let action = UIAlertAction(title: "Add Category", style: .default) { (action) in
+        let alert = UIAlertController (title: "Add New Category", message: "", preferredStyle: .alert)
+        let action = UIAlertAction(title: "Add", style: .default) { (action) in
             let newCategory = Category(context: self.context)
             newCategory.name = textField.text!
             self.categories.append(newCategory)
-        }
-        alert.addTextField { (alertTextField) in
-            alertTextField.placeholder = "Create a New Category"
-            textField = alertTextField
+            self.saveCategories(
+            )
+            
         }
         alert.addAction(action)
+        alert.addTextField { (field) in
+            textField = field
+            textField.placeholder = "Create a New Category"
+        }
         present(alert, animated: true, completion: nil)
-        saveData()
+     
     }
-    func saveData () {
+    func saveCategories () {
         do{
             try context.save()
         }catch {
             print("Error saving context, \(error)")
         }
+        tableView.reloadData()
     }
-    func loadData () {
+    func loadCategories () {
         let request: NSFetchRequest <Category> = Category.fetchRequest()
         do {
             categories = try context.fetch(request)
