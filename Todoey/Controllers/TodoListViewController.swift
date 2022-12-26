@@ -9,6 +9,12 @@ class TodoListViewController: UITableViewController {
     
     var itemArray = [Item]()
     
+    var selectedCategory : Category? {
+        didSet{
+            loadData()
+        }
+    }
+    
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
@@ -18,7 +24,7 @@ class TodoListViewController: UITableViewController {
         //main.stroybard'tan search barı ekranın üstündeki ilk tuşa +ctrl ile sürüklediğimiz için kod ile yazılmadı
         //ayrıca UISearchBarDelegate extension içinde olduğu için viewDidLoad'a tanımlanmıyor! Bunun yerine main.storyboard yolunu tercih ettik
         //searchBar.delegate = self
-        loadData()
+       // loadData()
       
     }
     
