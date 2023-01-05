@@ -11,7 +11,7 @@ class TodoListViewController: UITableViewController {
     
     var selectedCategory : Category? {
         didSet{
-            loadData()
+            loadItem(predicate: )
         }
     }
     
@@ -62,6 +62,7 @@ class TodoListViewController: UITableViewController {
             let newItem = Item(context: self.context)
             newItem.title = textField.text!
             newItem.done = false
+            newItem.parentCategory = self.selectedCategory
             self.itemArray.append(newItem)
             self.saveItem()
         }
@@ -93,13 +94,13 @@ extension TodoListViewController: UISearchBarDelegate {
             print("Error fatching data from context, \(error)")
         }
         
-        tableView.reloadData()
+        loadItem(with:request, predicate: predicate)
     }
     
     //MARK: - Search Button Back Method
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchBar.text?.count == 0 {
-            loadData()
+    
             DispatchQueue.main.async {
                 searchBar.resignFirstResponder()
             }
@@ -117,8 +118,14 @@ extension TodoListViewController: UISearchBarDelegate {
         tableView.reloadData()
     }
  
-    func loadData () {
-        let request : NSFetchRequest <Item> = Item.fetchRequest()
+    func loadItem (with request: NSFetchRequest<Item> = Item.fetchRequest(), predicate: NSPredicate) {
+        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
+       // request.predicate = predicate
+        if let additionalPredicate = predicate{
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])} else {
+            request.predicate = categoryPredicate
+        }
+        
         do{
         itemArray = try context.fetch(request)
         } catch {
