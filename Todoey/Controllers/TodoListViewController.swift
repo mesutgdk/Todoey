@@ -85,16 +85,11 @@ extension TodoListViewController: UISearchBarDelegate {
         let request : NSFetchRequest<Item> = Item.fetchRequest()
         
         let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
-        request.predicate = predicate
+        // request.predicate = predicate
         let sortDescriptor = NSSortDescriptor(key: "title", ascending: true)
         request.sortDescriptors = [sortDescriptor]
-        do {
-            itemArray = try context.fetch(request)
-        } catch {
-            print("Error fatching data from context, \(error)")
-        }
         
-        loadItem(with:request)
+        loadItem(with:request, predicate: predicate)
     }
     
     //MARK: - Search Button Back Method
@@ -104,6 +99,7 @@ extension TodoListViewController: UISearchBarDelegate {
             DispatchQueue.main.async {
                 searchBar.resignFirstResponder()
             }
+            loadItem()
         }
       
     }
