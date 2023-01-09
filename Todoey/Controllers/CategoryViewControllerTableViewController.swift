@@ -5,22 +5,22 @@
 
 import UIKit
 import CoreData
+import RealmSwift
 
 class CategoryViewControllerTableViewController: UITableViewController {
+    let realm = try! Realm()
 
     var categories = [Category]()
     
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-    
-    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Category.plist")
+   // let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Category.plist")
         
     override func viewDidLoad() {
         super.viewDidLoad()
 
         loadCategories()
     }
-
-    // MARK: - Table view data source
+    
+    // MARK: -Table view data source
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
@@ -36,11 +36,10 @@ class CategoryViewControllerTableViewController: UITableViewController {
         var textField = UITextField()
         let alert = UIAlertController (title: "Add New Category", message: "", preferredStyle: .alert)
         let action = UIAlertAction(title: "Add", style: .default) { (action) in
-            let newCategory = Category(context: self.context)
+            let newCategory = Category()
             newCategory.name = textField.text!
             self.categories.append(newCategory)
-            self.saveCategories(
-            )
+            self.saveCategories(category: newCategory)
             
         }
         alert.addAction(action)
@@ -51,9 +50,11 @@ class CategoryViewControllerTableViewController: UITableViewController {
         present(alert, animated: true, completion: nil)
      
     }
-    func saveCategories () {
+    func saveCategories (category: Category) {
         do{
-            try context.save()
+            try realm.write{
+                realm.add(category)
+            }
         }catch {
             print("Error saving context, \(error)")
         }
