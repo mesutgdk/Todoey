@@ -4,13 +4,13 @@
 //
 
 import UIKit
-import CoreData
+
 import RealmSwift
 
 class CategoryViewControllerTableViewController: UITableViewController {
     let realm = try! Realm()
 
-    var categories = [Category]()
+    var categories : Results<Category>?
     
    // let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Category.plist")
         
@@ -24,11 +24,11 @@ class CategoryViewControllerTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        return categories.count
+        return categories?.count ?? 1
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
-        cell.textLabel?.text = categories[indexPath.row].name
+        cell.textLabel?.text = categories?[indexPath.row].name ?? "No Category Added Yet"
         return cell
     }
     
@@ -38,7 +38,6 @@ class CategoryViewControllerTableViewController: UITableViewController {
         let action = UIAlertAction(title: "Add", style: .default) { (action) in
             let newCategory = Category()
             newCategory.name = textField.text!
-            self.categories.append(newCategory)
             self.saveCategories(category: newCategory)
             
         }
@@ -61,13 +60,7 @@ class CategoryViewControllerTableViewController: UITableViewController {
         tableView.reloadData()
     }
     func loadCategories () {
-        let request: NSFetchRequest <Category> = Category.fetchRequest()
-        do {
-            categories = try context.fetch(request)
-        } catch {
-            print("Error fetching data from context, \(error)")
-        }
-        
+        let categories = realm.object(Category.self)
         tableView.reloadData()
     }
 }
@@ -79,7 +72,7 @@ extension CategoryViewControllerTableViewController {
         let destinationVC = segue.destination as! TodoListViewController
         
         if let indexPath = tableView.indexPathForSelectedRow{
-            destinationVC.selectedCategory = categories[indexPath.row]
+            destinationVC.selectedCategory = categories?[indexPath.row]
             
         }
     }
