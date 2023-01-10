@@ -17,7 +17,6 @@ class TodoListViewController: UITableViewController {
         }
     }
     
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
    
@@ -48,8 +47,8 @@ class TodoListViewController: UITableViewController {
             do{
                 try realm.write{
                     // if u want to delete, use first line
-                    //realm.delete(item)
-                    item.done = !item.done
+                    realm.delete(item)
+                    //item.done = !item.done
                 }
             } catch {
                 print("Error deleting done status, \(error)")
@@ -71,6 +70,7 @@ class TodoListViewController: UITableViewController {
                 do {
                     try self.realm.write{
                         let newItem = Item()
+                        newItem.dateCreated = Date()
                         newItem.title = textField.text!
                         currentCategory.items.append(newItem)
                     }
@@ -91,13 +91,17 @@ class TodoListViewController: UITableViewController {
     }
     
 }
+
+
 extension TodoListViewController: UISearchBarDelegate {
    
     
     //MARK: - Search Item Methods
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         
-        todoItems = todoItems?.filter("title CONTAINS[cd]", searchBar.text!).sorted(byKeyPath: "title", ascending: true)
+        todoItems = todoItems?.filter("title CONTAINS[cd]", searchBar.text!).sorted(byKeyPath: "dateCreated", ascending: false)
+            //.sorted(byKeyPath: "title", ascending: true)
+            
         loadItem()
     }
     
@@ -115,10 +119,12 @@ extension TodoListViewController: UISearchBarDelegate {
     
     //MARK: - Model Manupilation Methods
     func saveItem () {
-        do {
-           try context.save()
+        do{
+            try realm.write{
+                realm.add(todoItems)
+            }
         }catch {
-            print("Error encoding itemarray, \(error)")
+            print("Error saving context, \(error)")
         }
         tableView.reloadData()
     }
