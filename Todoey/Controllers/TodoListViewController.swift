@@ -47,8 +47,8 @@ class TodoListViewController: UITableViewController {
             do{
                 try realm.write{
                     // if u want to delete, use first line
-                    realm.delete(item)
-                    //item.done = !item.done
+                    //realm.delete(item)
+                    item.done = !item.done
                 }
             } catch {
                 print("Error deleting done status, \(error)")
@@ -99,10 +99,11 @@ extension TodoListViewController: UISearchBarDelegate {
     //MARK: - Search Item Methods
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         
-        todoItems = todoItems?.filter("title CONTAINS[cd]", searchBar.text!).sorted(byKeyPath: "dateCreated", ascending: false)
+        todoItems = todoItems?.filter("title CONTAINS[cd] %@", searchBar.text!)
+            //.sorted(byKeyPath: "dateCreated", ascending: false)
             //.sorted(byKeyPath: "title", ascending: true)
             
-        loadItem()
+        tableView.reloadData()
     }
     
     //MARK: - Search Button Back Method
@@ -118,10 +119,10 @@ extension TodoListViewController: UISearchBarDelegate {
     }
     
     //MARK: - Model Manupilation Methods
-    func saveItem () {
+    func saveItem (item: Item) {
         do{
             try realm.write{
-                realm.add(todoItems)
+                realm.add(item)
             }
         }catch {
             print("Error saving context, \(error)")

@@ -49,6 +49,7 @@ class CategoryViewControllerTableViewController: UITableViewController {
         present(alert, animated: true, completion: nil)
      
     }
+     //MARK - saving and loading function for category
     func saveCategories (category: Category) {
         do{
             try realm.write{
