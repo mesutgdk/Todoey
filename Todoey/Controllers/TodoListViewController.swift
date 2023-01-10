@@ -47,9 +47,18 @@ class TodoListViewController: UITableViewController {
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        
-        todoItems[indexPath.row].done = !todoItems[indexPath.row].done
-        saveItem()
+        if let item = todoItems?[indexPath.row]{
+            do{
+                try realm.write{
+                    // if u want to delete, use first line
+                    //realm.delete(item)
+                    item.done = !item.done
+                }
+            } catch {
+                print("Error deleting done status, \(error)")
+            }
+        }
+        tableView.reloadData()
         tableView.deselectRow(at: indexPath, animated: true)
     }
     //MARK: - Add New Item IBAction Button Pressed Part
@@ -61,12 +70,19 @@ class TodoListViewController: UITableViewController {
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             // what will happen once user clicks the Add Button on UIAlert
             
-            let newItem = Item(context: self.context)
-            newItem.title = textField.text!
-            newItem.done = false
-            newItem.parentCategory = self.selectedCategory
-            self.itemArray.append(newItem)
-            self.saveItem()
+            if let currentCategory = self.selectedCategory {
+                do {
+                    try self.realm.write{
+                        let newItem = Item()
+                        newItem.title = textField.text!
+                        currentCategory.items.append(newItem)
+                    }
+                } catch{
+                    print("Error saving new items,\(error)")
+                }
+            }
+          
+            self.tableView.reloadData()
         }
         alert.addTextField { (alertTextField) in
             alertTextField.placeholder = "Create new item"
