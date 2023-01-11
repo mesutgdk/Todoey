@@ -15,14 +15,10 @@ class TodoListViewController: SwipeTableViewController {
             loadItem()
         }
     }
-    
-    
-    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-      
+     
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -30,7 +26,7 @@ class TodoListViewController: SwipeTableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         if let item = todoItems?[indexPath.row] {
         cell.textLabel?.text = item.title
         
@@ -89,6 +85,17 @@ class TodoListViewController: SwipeTableViewController {
         
     }
     
+    override func updateModel(at indexPath: IndexPath) {
+        if let item = todoItems?[indexPath.row] {
+            do {
+                try realm.write{
+                    realm.delete(item)
+                }
+            }catch {
+                print("Error deleting item,\(error)")
+            }
+        }
+    }
 }
 
 
@@ -133,5 +140,6 @@ extension TodoListViewController: UISearchBarDelegate {
         todoItems = selectedCategory?.items.sorted(byKeyPath:"title", ascending: true)
         tableView.reloadData()
     }
+   
    
 }

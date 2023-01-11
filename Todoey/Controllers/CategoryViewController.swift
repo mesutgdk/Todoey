@@ -13,7 +13,6 @@ class CategoryViewController: SwipeTableViewController {
         
     override func viewDidLoad() {
         super.viewDidLoad()
-
         loadCategories()
     }
     
