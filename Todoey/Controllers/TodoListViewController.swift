@@ -3,10 +3,9 @@
 //  Todoey
 
 import UIKit
-import CoreData
 import RealmSwift
 
-class TodoListViewController: UITableViewController {
+class TodoListViewController: SwipeTableViewController {
     
     var todoItems : Results<Item>?
     

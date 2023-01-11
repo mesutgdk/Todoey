@@ -3,7 +3,6 @@
 
 
 import UIKit
-import CoreData
 import RealmSwift
 
 @UIApplicationMain
