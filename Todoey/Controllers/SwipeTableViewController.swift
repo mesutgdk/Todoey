@@ -44,6 +44,7 @@ class SwipeTableViewController: UITableViewController, SwipeTableViewCellDelegat
 
         return [deleteAction]
     }
+   
     func updateModel(at indexPath : IndexPath) {
         // update model
     }

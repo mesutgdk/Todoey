@@ -84,7 +84,7 @@ class TodoListViewController: SwipeTableViewController {
         present(alert, animated: true, completion: nil)
         
     }
-    
+    //MARK - Delete Data From Swipe
     override func updateModel(at indexPath: IndexPath) {
         if let item = todoItems?[indexPath.row] {
             do {
